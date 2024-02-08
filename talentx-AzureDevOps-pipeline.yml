@@ -1,5 +1,5 @@
 trigger:
-- main
+- talentx-CICD
 
 pool:
   vmImage: 'ubuntu-latest'
