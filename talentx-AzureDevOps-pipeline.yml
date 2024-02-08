@@ -1,19 +1,128 @@
-# Starter pipeline
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
 - main
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'ubuntu-latest'
 
-steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
+variables:
+  registry: "securewolf/talentx_app"
+  registryCredential: 'talentxDHub'
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+stages:
+- stage: Build
+  jobs:
+  - job: Build
+    steps:
+    - task: Maven@3
+      displayName: 'Build'
+      inputs:
+        goals: 'clean install -DskipTests'
+        options: '-Xmx3072m'
+
+    - task: PublishBuildArtifacts@1
+      displayName: 'Archive Artifacts'
+      inputs:
+        PathtoPublish: 'target/*war'
+        ArtifactName: 'warFiles'
+        publishLocation: 'Container'
+
+- stage: UnitTest
+  jobs:
+  - job: UnitTest
+    steps:
+    - task: Maven@3
+      displayName: 'Unit Test'
+      inputs:
+        goals: 'test'
+        options: '-Xmx3072m'
+
+- stage: CheckstyleAnalysis
+  jobs:
+  - job: CheckstyleAnalysis
+    steps:
+    - task: Maven@3
+      displayName: 'Checkstyle Analysis'
+      inputs:
+        goals: 'checkstyle:checkstyle'
+        options: '-Xmx3072m'
+
+- stage: CodeAnalysisWithSonarQube
+  jobs:
+  - job: CodeAnalysis
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: SonarQubePrepare@4
+      inputs:
+        SonarQube: 'SonarQubeConnection'
+        scannerMode: 'CLI'
+        configMode: 'manual'
+        cliProjectKey: 'talentx'
+        cliProjectName: 'talentx'
+        cliSources: 'src/'
+        cliTests: 'target/surefire-reports/'
+        cliBinaries: 'target/test-classes/com/talentx/account/controllerTest/'
+        cliJavaCheckstyleReportPaths: 'target/checkstyle-result.xml'
+    
+    - task: SonarQubeAnalyze@4
+    
+    - task: SonarQubePublish@4
+      inputs:
+        pollingTimeoutSec: '300'
+
+- stage: BuildTalentxAppImage
+  jobs:
+  - job: BuildImage
+    steps:
+    - task: Docker@2
+      displayName: 'Build Talentx App Image'
+      inputs:
+        command: 'build'
+        Dockerfile: '**/Dockerfile'
+        tags: '$(Build.BuildId)'
+        
+- stage: UploadImageToDockerhub
+  jobs:
+  - job: UploadImage
+    steps:
+    - task: Docker@2
+      displayName: 'Upload Image to Dockerhub'
+      inputs:
+        command: 'push'
+        repository: '$(registry)'
+        tags: 'latest'
+
+- stage: RemoveOldAppImage
+  jobs:
+  - job: RemoveImage
+    steps:
+    - task: PowerShell@2
+      displayName: 'Remove Old App Image'
+      inputs:
+        targetType: 'inline'
+        script: 'docker rmi $(registry):$(Build.BuildId)'
+
+- stage: AppDeploymentOnK8s
+  jobs:
+  - deployment: DeployApp
+    displayName: 'App Deployment on K8s'
+    pool:
+      vmImage: 'ubuntu-latest'
+    environment: 'production'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: HelmInstaller@1
+            inputs:
+              helmVersionToInstall: 'latest'
+              
+          - task: HelmDeploy@0
+            inputs:
+              command: 'upgrade'
+              chartType: 'Name'
+              chartName: 'talentx-stack'
+              releaseName: 'talentx-release'
+              overrideValues: '--set appimage=$(registry):$(Build.BuildId)'
+              namespace: 'prod'
+
