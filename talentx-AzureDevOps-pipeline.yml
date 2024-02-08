@@ -27,6 +27,7 @@ stages:
         publishLocation: 'Container'
 
 - stage: UnitTest
+  dependsOn: Build
   jobs:
   - job: UnitTest
     steps:
@@ -37,6 +38,7 @@ stages:
         options: '-Xmx3072m'
 
 - stage: CheckstyleAnalysis
+  dependsOn: UnitTest
   jobs:
   - job: CheckstyleAnalysis
     steps:
@@ -46,7 +48,8 @@ stages:
         goals: 'checkstyle:checkstyle'
         options: '-Xmx3072m'
 
-- stage: CodeAnalysisWithSonarQube
+- stage: CodeAnalysisWithSonarQube 
+  dependsOn: CheckstyleAnalysis
   jobs:
   - job: CodeAnalysis
     pool:
@@ -71,6 +74,7 @@ stages:
         pollingTimeoutSec: '300'
 
 - stage: BuildTalentxAppImage
+  dependsOn: CodeAnalysisWithSonarqube 
   jobs:
   - job: BuildImage
     steps:
@@ -82,6 +86,7 @@ stages:
         tags: '$(Build.BuildId)'
         
 - stage: UploadImageToDockerhub
+  dependsOn: BuildTalentxAppImage
   jobs:
   - job: UploadImage
     steps:
@@ -93,6 +98,7 @@ stages:
         tags: 'latest'
 
 - stage: RemoveOldAppImage
+  dependsOn: UploadImageToDockerhub
   jobs:
   - job: RemoveImage
     steps:
@@ -103,6 +109,7 @@ stages:
         script: 'docker rmi $(registry):$(Build.BuildId)'
 
 - stage: AppDeploymentOnK8s
+  dependsOn: RemoveOldAppImage
   jobs:
   - deployment: DeployApp
     displayName: 'App Deployment on K8s'
