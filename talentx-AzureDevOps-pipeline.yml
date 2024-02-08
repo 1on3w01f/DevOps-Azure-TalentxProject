@@ -17,7 +17,7 @@ stages:
       displayName: 'Build'
       inputs:
         goals: 'clean install -DskipTests'
-        options: '-Xmx3072m'
+        #options: '-Xmx3072m'
 
     - task: PublishBuildArtifacts@1
       displayName: 'Archive Artifacts'
