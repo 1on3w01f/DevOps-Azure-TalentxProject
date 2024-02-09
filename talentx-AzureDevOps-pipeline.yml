@@ -19,6 +19,13 @@ stages:
         goals: 'clean install -DskipTests'
         #options: '-Xmx3072m'
 
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: '$(System.DefaultWorkingDirectory)'
+        Contents: '**/*.war'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    - bash: ls -R $(Build.ArtifactStagingDirectory)
+ 
     - task: PublishBuildArtifacts@1
       displayName: 'Archive Artifact'
       inputs:
