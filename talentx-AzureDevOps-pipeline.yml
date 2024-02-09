@@ -20,10 +20,10 @@ stages:
         #options: '-Xmx3072m'
 
     - task: PublishBuildArtifacts@1
-      displayName: 'Archive Artifacts'
+      displayName: 'Archive Artifact'
       inputs:
-        PathtoPublish: 'target/*war'
-        ArtifactName: 'warFiles'
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'talentx'
         publishLocation: 'Container'
 
 - stage: UnitTest
@@ -35,7 +35,7 @@ stages:
       displayName: 'Unit Test'
       inputs:
         goals: 'test'
-        options: '-Xmx3072m'
+        #options: '-Xmx3072m'
 
 - stage: CheckstyleAnalysis
   dependsOn: UnitTest
@@ -46,7 +46,7 @@ stages:
       displayName: 'Checkstyle Analysis'
       inputs:
         goals: 'checkstyle:checkstyle'
-        options: '-Xmx3072m'
+        #options: '-Xmx3072m'
 
 - stage: CodeAnalysisWithSonarQube 
   dependsOn: CheckstyleAnalysis
