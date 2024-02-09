@@ -66,6 +66,7 @@ stages:
       inputs:
         SonarQube: 'SonarQubeConnection'
         scannerMode: 'CLI'
+        scannerVersion: '4.7'
         configMode: 'manual'
         cliProjectKey: 'talentx'
         cliProjectName: 'talentx'
