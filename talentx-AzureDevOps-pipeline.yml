@@ -13,11 +13,15 @@ stages:
   jobs:
   - job: Build
     steps:
+    - task: SonarQubePrepare@5
+      inputs:
+        SonarQube: 'SonarQubeConnection'
+        scannerMode: 'Other'
     - task: Maven@3
       displayName: 'Build'
       inputs:
         goals: 'clean install -DskipTests'
-        #options: '-Xmx3072m'
+        mavenOptions: '-Xmx3072m'
 
     - task: CopyFiles@2
       inputs:
@@ -42,7 +46,7 @@ stages:
       displayName: 'Unit Test'
       inputs:
         goals: 'test'
-        #options: '-Xmx3072m'
+        mavenOptions: '-Xmx3072m'
 
 - stage: CheckstyleAnalysis
   dependsOn: UnitTest
@@ -53,34 +57,19 @@ stages:
       displayName: 'Checkstyle Analysis'
       inputs:
         goals: 'checkstyle:checkstyle'
-        #options: '-Xmx3072m'
+        mavenOptions: '-Xmx3072m'
 
 - stage: CodeAnalysisWithSonarQube 
   dependsOn: CheckstyleAnalysis
   jobs:
-  - job: CodeAnalysis
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - task: SonarQubePrepare@5
-      inputs:
-        SonarQube: 'SonarQubeConnection'
-        scannerMode: 'CLI'
-        configMode: 'manual'
-        cliProjectKey: 'talentx'
-        cliProjectName: 'talentx'
-        cliSources: 'src/'
-        cliTests: 'target/surefire-reports/'
-        cliBinaries: 'target/test-classes/com/talentx/account/controllerTest/'
-        cliJavaCheckstyleReportPaths: 'target/checkstyle-result.xml'
+    - job: SonarAnalysis
+      steps:
+      - task: Maven@3
+        displayName: 'SonarQube Analysis'
+        inputs:
+          goals: 'sonar:sonar'
+          mavenOptions: '-Xmx3072m'
 
-    - task: SonarQubeAnalyze@5
-      inputs:
-        jdkversion: 'JAVA_HOME_11_X64'
-
-    - task: SonarQubePublish@5
-      inputs:
-        pollingTimeoutSec: '300'
 - stage: BuildTalentxAppImage
   dependsOn: CodeAnalysisWithSonarqube 
   jobs:
