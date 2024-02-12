@@ -28,7 +28,7 @@ stages:
         SourceFolder: '$(System.DefaultWorkingDirectory)'
         Contents: '**/*.war'
         TargetFolder: '$(Build.ArtifactStagingDirectory)'
-    - bash: ls -R $(System.DefaultWorkingDirectory))
+    - bash: ls -R $(System.DefaultWorkingDirectory)
  
     - task: PublishBuildArtifacts@1
       displayName: 'Archive Artifact'
