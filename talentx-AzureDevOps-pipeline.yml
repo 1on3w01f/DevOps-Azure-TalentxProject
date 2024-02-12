@@ -28,7 +28,7 @@ stages:
         SourceFolder: '$(System.DefaultWorkingDirectory)'
         Contents: '**/*.war'
         TargetFolder: '$(Build.ArtifactStagingDirectory)'
-    - bash: ls -R $(Build.ArtifactStagingDirectory)
+    - bash: ls -R $(System.DefaultWorkingDirectory))
  
     - task: PublishBuildArtifacts@1
       displayName: 'Archive Artifact'
@@ -68,7 +68,7 @@ stages:
         displayName: 'SonarQube Analysis'
         inputs:
           goals: 'sonar:sonar'
-          mavenOptions: '-Dsonar.host.url=http://54.91.131.112:9000 -Dsonar.login=admin -Dsonar.password=Default@123456 -Dsonar.java.binaries=/home/vsts/work/1/s/**/test-classes/com/talentx/account/controllerTest/'
+          mavenOptions: '-Dsonar.host.url=http://18.212.58.52:9000 -Dsonar.login=admin -Dsonar.password=Default@123456 -Dsonar.java.binaries=/home/vsts/work/1/s/target/test-classes/com/talentx/account/controllerTest/'
 
 - stage: BuildTalentxAppImage
   dependsOn: CodeAnalysisWithSonarqube 
