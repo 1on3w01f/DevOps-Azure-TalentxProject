@@ -68,7 +68,7 @@ stages:
         displayName: 'SonarQube Analysis'
         inputs:
           goals: 'sonar:sonar'
-          mavenOptions: '-Dsonar.host.url=http://54.91.131.112///:9000'
+          mavenOptions: '-Dsonar.host.url=http://54.91.131.112/:9000'
 
 - stage: BuildTalentxAppImage
   dependsOn: CodeAnalysisWithSonarqube 
