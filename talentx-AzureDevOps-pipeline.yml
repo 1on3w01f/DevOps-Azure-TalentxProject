@@ -5,8 +5,7 @@ pool:
   vmImage: 'ubuntu-latest'
 
 variables:
-  registry: "securewolf/talentx_app"
-  registryCredential: 'talentxDHub'
+  tag: '$(Build.BuildId)'
 
 stages:
 - stage: Build
@@ -60,7 +59,7 @@ stages:
         mavenOptions: '-Xmx3072m'
 
 - stage: CodeAnalysisWithSonarQube 
-  dependsOn: Build
+  dependsOn: BuildTalentxAppImage
   jobs:
     - job: SonarAnalysis
       steps:
@@ -71,16 +70,18 @@ stages:
           mavenOptions: '-Dsonar.host.url=http://54.209.69.14:9000 -Dsonar.login=admin -Dsonar.password=Default@123456 -Dsonar.java.binaries=target/test-classes/com/talentx/account/controllerTest/'
 
 - stage: BuildTalentxAppImage
-  dependsOn: CodeAnalysisWithSonarqube 
+  dependsOn: Build
   jobs:
   - job: BuildImage
     steps:
     - task: Docker@2
       displayName: 'Build Talentx App Image'
       inputs:
-        command: 'build'
+        containerRegistry: 'talentxDHub'
+        repository: 'securewolf/talentx_app'
+        command: 'buildAndPush'
         Dockerfile: '**/Dockerfile'
-        tags: '$(Build.BuildId)'
+        tags: '$(tag)'
         
 - stage: UploadImageToDockerhub
   dependsOn: BuildTalentxAppImage
