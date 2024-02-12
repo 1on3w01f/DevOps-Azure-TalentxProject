@@ -60,7 +60,7 @@ stages:
         mavenOptions: '-Xmx3072m'
 
 - stage: CodeAnalysisWithSonarQube 
-  dependsOn: CheckstyleAnalysis
+  dependsOn: Build
   jobs:
     - job: SonarAnalysis
       steps:
@@ -68,11 +68,7 @@ stages:
         displayName: 'SonarQube Analysis'
         inputs:
           goals: 'sonar:sonar'
-          mavenOptions: '-Dsonar.host.url=http://54.91.131.112:9000 -Dsonar.login=admin -Dsonar.password=Default@123456 \
-                   -Dsonar.java.binaries=target/test-classes/com/talentx/account/controllerTest/ \
-                   -Dsonar.junit.reportsPath=target/surefire-reports/ \
-                   -Dsonar.jacoco.reportsPath=target/jacoco.exec \
-                   -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml'
+          mavenOptions: '-Dsonar.host.url=http://54.91.131.112:9000 -Dsonar.login=admin -Dsonar.password=Default@123456 -Dsonar.java.binaries=target/test-classes/com/talentx/account/controllerTest/'
 
 - stage: BuildTalentxAppImage
   dependsOn: CodeAnalysisWithSonarqube 
