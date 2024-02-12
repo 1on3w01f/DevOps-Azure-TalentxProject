@@ -68,7 +68,7 @@ stages:
         displayName: 'SonarQube Analysis'
         inputs:
           goals: 'sonar:sonar'
-          mavenOptions: '-Dsonar.host.url=http://3.87.54.178:9000 -Dsonar.login=admin -Dsonar.password=Default@123456 -Dsonar.java.binaries=/home/vsts/work/1/s/target/test-classes/com/talentx/account/controllerTest/'
+          mavenOptions: '-Dsonar.host.url=http://3.87.54.178:9000 -Dsonar.login=admin -Dsonar.password=Default@123456 -Dsonar.java.binaries=target/test-classes/com/talentx/account/controllerTest/'
 
 - stage: BuildTalentxAppImage
   dependsOn: CodeAnalysisWithSonarqube 
