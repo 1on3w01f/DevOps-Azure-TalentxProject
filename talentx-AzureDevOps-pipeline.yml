@@ -38,7 +38,7 @@ stages:
         publishLocation: 'Container'
 
 - stage: UnitTest
-  dependsOn: Build
+  dependsOn: CodeAnalysisWithSonarQube
   jobs:
   - job: UnitTest
     steps:
@@ -68,7 +68,7 @@ stages:
         displayName: 'SonarQube Analysis'
         inputs:
           goals: 'sonar:sonar'
-          mavenOptions: '-Dsonar.host.url=http://54.91.131.112:9000 -Dsonar.login=admin -Dsonar.password=Default@123456 -Dsonar.java.binaries=target/test-classes/com/talentx/account/controllerTest/'
+          mavenOptions: '-Dsonar.host.url=http://54.91.131.112:9000 -Dsonar.login=admin -Dsonar.password=Default@123456 -Dsonar.java.binaries=/home/vsts/work/1/s/**/test-classes/com/talentx/account/controllerTest/'
 
 - stage: BuildTalentxAppImage
   dependsOn: CodeAnalysisWithSonarqube 
