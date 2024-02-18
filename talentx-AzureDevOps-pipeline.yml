@@ -4,8 +4,8 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-variables:
-  #tag: '$(Build.BuildId)'
+#variables:
+ # tag: '$(Build.BuildId)'
 
 stages:
 - stage: Build
