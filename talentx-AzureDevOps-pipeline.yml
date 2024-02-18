@@ -82,32 +82,9 @@ stages:
         command: 'buildAndPush'
         Dockerfile: '**/Dockerfile'
         tags: '$(tag)'
-        
-- stage: UploadImageToDockerhub
-  dependsOn: BuildTalentxAppImage
-  jobs:
-  - job: UploadImage
-    steps:
-    - task: Docker@2
-      displayName: 'Upload Image to Dockerhub'
-      inputs:
-        command: 'push'
-        repository: '$(registry)'
-        tags: 'latest'
-
-- stage: RemoveOldAppImage
-  dependsOn: UploadImageToDockerhub
-  jobs:
-  - job: RemoveImage
-    steps:
-    - task: PowerShell@2
-      displayName: 'Remove Old App Image'
-      inputs:
-        targetType: 'inline'
-        script: 'docker rmi $(registry):$(Build.BuildId)'
 
 - stage: AppDeploymentOnK8s
-  dependsOn: RemoveOldAppImage
+  dependsOn: BuildTalentxAppImage
   jobs:
   - deployment: DeployApp
     displayName: 'App Deployment on K8s'
