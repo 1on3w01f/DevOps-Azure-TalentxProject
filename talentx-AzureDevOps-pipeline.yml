@@ -1,0 +1,123 @@
+trigger:
+- talentx-CICD
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+stages:
+- stage: Build
+  jobs:
+  - job: Build
+    steps:
+    - task: SonarQubePrepare@5
+      inputs:
+        SonarQube: 'SonarQubeConnection'
+        scannerMode: 'Other'
+    - task: Maven@3
+      displayName: 'Build'
+      inputs:
+        goals: 'clean install -DskipTests'
+        mavenOptions: '-Xmx3072m'
+
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: '$(System.DefaultWorkingDirectory)'
+        Contents: '**/*.war'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    - bash: ls -R $(System.DefaultWorkingDirectory)
+ 
+    - task: PublishBuildArtifacts@1
+      displayName: 'Archive Artifact'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'talentx'
+        publishLocation: 'Container'
+
+- stage: UnitTest
+  dependsOn: CodeAnalysisWithSonarQube
+  jobs:
+  - job: UnitTest
+    steps:
+    - task: Maven@3
+      displayName: 'Unit Test'
+      inputs:
+        goals: 'test'
+        mavenOptions: '-Xmx3072m'
+
+- stage: CheckstyleAnalysis
+  dependsOn: UnitTest
+  jobs:
+  - job: CheckstyleAnalysis
+    steps:
+    - task: Maven@3
+      displayName: 'Checkstyle Analysis'
+      inputs:
+        goals: 'checkstyle:checkstyle'
+        mavenOptions: '-Xmx3072m'
+
+- stage: CodeAnalysisWithSonarQube 
+  dependsOn: BuildTalentxAppImage
+  jobs:
+    - job: SonarAnalysis
+      steps:
+      - task: Maven@3
+        displayName: 'SonarQube Analysis'
+        inputs:
+          goals: 'clean install sonar:sonar'
+          mavenOptions: '-Dsonar.host.url=http://52.207.219.135:9000 -Dsonar.login=squ_b5e85e25fd0d68843b66ce218d1eb008cc2ed5de -Dsonar.java.binaries=target/test-classes/com/talentx/account/controllerTest/'
+
+- stage: BuildTalentxAppImage
+  variables:
+    tag: '1atest'
+  dependsOn: Build
+  jobs:
+  - job: BuildImage
+    steps:
+    - task: Docker@2
+      displayName: 'Build Talentx App Image'
+      inputs:
+        containerRegistry: 'talentxDHub'
+        repository: 'securewolf/talentx_app'
+        command: 'buildAndPush'
+        Dockerfile: '**/Dockerfile'
+        tags: '$(tag)'
+
+- stage: Prod
+  variables:
+    repository: 'securewolf/talentx_app'
+    tags: '1atest'
+  jobs:
+    - deployment: Helm_Deployment_Prod
+      environment: prod
+      variables:
+        env: prod
+      strategy:
+       runOnce: 
+        deploy:
+          steps:
+            - checkout: self
+              clean: true
+              submodules: true | recursive
+              path: helm
+              displayName: Checkout
+            - task: Bash@3
+              displayName: 'Helm dependency update'
+              inputs:
+                targetType: 'inline'
+                script: |
+                  ls
+                  helm dependency list talentxcharts
+                  helm dependency list talentxcharts
+            - task: HelmDeploy@0
+              inputs:
+                connectionType: 'Kubernetes Service Connection'
+                kubernetesServiceConnection: 'kubeTalentxConnect'
+                command: 'login'
+
+            - task: Bash@3
+              displayName: 'Helm Uppgrade'
+              inputs:
+                targetType: 'inline'
+                script: |
+                  helm upgrade --install --force talentxstack1 $(Agent.BuildDirectory)/helm/talentxcharts --set appimage=$(repository):$(tag)
+
