@@ -54,8 +54,7 @@ stages:
         goals: 'checkstyle:checkstyle'
         mavenOptions: '-Xmx3072m'
 
-- stage: CodeAnalysisWithSonarQube 
-  dependsOn: BuildTalentxAppImage
+- stage: CodeAnalysisWithSonarQube
   jobs:
     - job: SonarAnalysis
       steps:
@@ -81,7 +80,7 @@ stages:
         Dockerfile: '**/Dockerfile'
         tags: '$(tag)'
 
-- stage: Prod
+- stage: DeployToAKS
   variables:
     repository: 'securewolf/talentx_app'
     tags: '1atest'
