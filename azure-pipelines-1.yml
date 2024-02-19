@@ -1,0 +1,39 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+  - stage: Prod
+    jobs:
+      - deployment: Helm Deployment Prod
+        environment: prod
+        variables:
+          env: prod
+        strategy:
+        runOnce:
+          deploy:
+          steps:
+            - checkout: self
+              clean: true
+              submodules: true | recursive
+              path: helm
+              displayName: Checkout
+            - task: Bash@3
+              displayName: Helm dependency update
+              inputs:
+                targetType: 'inline'
+                script: |
+                  ls
+                  helm dependency list talentxchart
+                  helm dependency list talentxchart
+
+
+
+
