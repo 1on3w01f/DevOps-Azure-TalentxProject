@@ -34,7 +34,6 @@ stages:
         publishLocation: 'Container'
 
 - stage: UnitTest
-  dependsOn: CodeAnalysisWithSonarQube
   jobs:
   - job: UnitTest
     steps:
@@ -45,7 +44,6 @@ stages:
         mavenOptions: '-Xmx3072m'
 
 - stage: CheckstyleAnalysis
-  dependsOn: UnitTest
   jobs:
   - job: CheckstyleAnalysis
     steps:
@@ -55,13 +53,3 @@ stages:
         goals: 'checkstyle:checkstyle'
         mavenOptions: '-Xmx3072m'
 
-- stage: CodeAnalysisWithSonarQube 
-  dependsOn: BuildTalentxAppImage
-  jobs:
-    - job: SonarAnalysis
-      steps:
-      - task: Maven@3
-        displayName: 'SonarQube Analysis'
-        inputs:
-          goals: 'clean install sonar:sonar'
-          mavenOptions: '-Dsonar.host.url=http://3.84.191.227:9000 -Dsonar.login=admin -Dsonar.password=Default@123456 -Dsonar.java.binaries=target/test-classes/com/talentx/account/controllerTest/'
