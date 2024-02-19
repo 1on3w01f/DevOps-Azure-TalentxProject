@@ -17,22 +17,22 @@ stages:
         variables:
           env: prod
         strategy:
-        runOnce:
+         runOnce: 
           deploy:
-          steps:
-            - checkout: self
-              clean: true
-              submodules: true | recursive
-              path: helm
-              displayName: Checkout
-            - task: Bash@3
-              displayName: Helm dependency update
-              inputs:
-                targetType: 'inline'
-                script: |
-                  ls
-                  helm dependency list talentxchart
-                  helm dependency list talentxchart
+            steps:
+              - checkout: self
+                clean: true
+                submodules: true | recursive
+                path: helm
+                displayName: Checkout
+              - task: Bash@3
+                displayName: Helm dependency update
+                inputs:
+                  targetType: 'inline'
+                  script: |
+                    ls
+                    helm dependency list talentxchart
+                    helm dependency list talentxchart
 
 
 
