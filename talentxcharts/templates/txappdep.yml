@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: txapp
-          image: {{.Values.appimage}}
+          image: securewolf/talentx_app:1atest
           ports:
             - name: txapp-port
               containerPort: 8080
