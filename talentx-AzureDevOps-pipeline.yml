@@ -64,11 +64,11 @@ stages:
         displayName: 'SonarQube Analysis'
         inputs:
           goals: 'clean install sonar:sonar'
-          mavenOptions: '-Dsonar.host.url=http://3.84.191.227:9000 -Dsonar.login=admin -Dsonar.password=Default@123456 -Dsonar.java.binaries=target/test-classes/com/talentx/account/controllerTest/'
+          mavenOptions: '-Dsonar.host.url=http://52.207.219.135:9000 -Dsonar.login=admin -Dsonar.password=Default@123456 -Dsonar.java.binaries=target/test-classes/com/talentx/account/controllerTest/'
 
 - stage: BuildTalentxAppImage
   variables:
-    tag: '$(Build.BuildId)'
+    tag: '1atest'
   dependsOn: Build
   jobs:
   - job: BuildImage
@@ -105,12 +105,8 @@ stages:
                   ls
                   helm dependency list talentxcharts
                   helm dependency list talentxcharts
-            - task: HelmDeploy@0
-              displayName: 'Login'
-              inputs:
-                connectionType: 'Kubernetes Service Connection'
-                kubernetesServiceConnection: 'kubeTalentxConnect'
-                command: 'login'
+
+
             - task: Bash@3
               displayName: 'Helm Uppgrade'
               inputs:
