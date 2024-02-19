@@ -12,7 +12,7 @@ pool:
 stages:
   - stage: Prod
     jobs:
-      - deployment: Helm Deployment Prod
+      - deployment: 'Helm Deployment Prod'
         environment: prod
         variables:
           env: prod
