@@ -2,7 +2,7 @@ trigger:
 - main
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'Ubuntu-Pool001'
 
 stages:
 - stage: Build
