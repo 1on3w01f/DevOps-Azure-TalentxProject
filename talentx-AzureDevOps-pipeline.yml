@@ -82,28 +82,39 @@ stages:
         Dockerfile: '**/Dockerfile'
         tags: '$(tag)'
 
-- stage: AppDeploymentOnK8s
-  dependsOn: BuildTalentxAppImage
+- stage: Prod
   jobs:
-  - deployment: DeployApp
-    displayName: 'App Deployment on K8s'
-    pool:
-      vmImage: 'ubuntu-latest'
-    environment: 'production'
-    strategy:
-      runOnce:
+    - deployment: Helm_Deployment_Prod
+      environment: prod
+      variables:
+        env: prod
+      strategy:
+       runOnce: 
         deploy:
           steps:
-          - task: HelmInstaller@1
-            inputs:
-              helmVersionToInstall: 'latest'
-              
-          - task: HelmDeploy@0
-            inputs:
-              command: 'upgrade'
-              chartType: 'Name'
-              chartName: 'talentx-stack'
-              releaseName: 'talentx-release'
-              overrideValues: '--set appimage=$(registry):$(Build.BuildId)'
-              namespace: 'prod'
+            - checkout: self
+              clean: true
+              submodules: true | recursive
+              path: helm
+              displayName: Checkout
+            - task: Bash@3
+              displayName: 'Helm dependency update'
+              inputs:
+                targetType: 'inline'
+                script: |
+                  ls
+                  helm dependency list talentxcharts
+                  helm dependency list talentxcharts
+            - task: HelmDeploy@0
+              displayName: 'Login'
+              inputs:
+                connectionType: 'Kubernetes Service Connection'
+                kubernetesServiceConnection: 'kubeTalentxConnect'
+                command: 'login'
+            - task: Bash@3
+              displayName: 'Helm Uppgrade'
+              inputs:
+                targetType: 'inline'
+                script: |
+                  helm upgrade --install --force talentxstack $(Agent.BuildDirectory)/helm/talentxcharts
 
