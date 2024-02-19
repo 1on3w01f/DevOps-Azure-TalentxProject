@@ -4,9 +4,6 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-#variables:
- # tag: '$(Build.BuildId)'
-
 stages:
 - stage: Build
   jobs:
@@ -70,6 +67,8 @@ stages:
           mavenOptions: '-Dsonar.host.url=http://3.84.191.227:9000 -Dsonar.login=admin -Dsonar.password=Default@123456 -Dsonar.java.binaries=target/test-classes/com/talentx/account/controllerTest/'
 
 - stage: BuildTalentxAppImage
+  variables:
+    tag: '$(Build.BuildId)'
   dependsOn: Build
   jobs:
   - job: BuildImage
@@ -81,7 +80,7 @@ stages:
         repository: 'securewolf/talentx_app'
         command: 'buildAndPush'
         Dockerfile: '**/Dockerfile'
-        tags: 'fresh'
+        tags: '$(tag)'
 
 - stage: AppDeploymentOnK8s
   dependsOn: BuildTalentxAppImage
