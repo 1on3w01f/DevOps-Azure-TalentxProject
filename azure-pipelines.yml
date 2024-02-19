@@ -16,8 +16,8 @@ stages:
     - task: Maven@3
       displayName: 'Build'
       inputs:
-        goals: 'clean install -DskipTests'
-        mavenOptions: '-Xmx3072m'
+        goals: 'clean install sonar:sonar'
+        mavenOptions: '-DskipTests -Dsonar.host.url=http://18.208.148.153:9000 -Dsonar.login=admin -Dsonar.password=Default@123456 -Dsonar.java.binaries=target/test-classes/com/talentx/account/controllerTest/'
 
     - task: CopyFiles@2
       inputs:
@@ -52,14 +52,3 @@ stages:
       inputs:
         goals: 'checkstyle:checkstyle'
         mavenOptions: '-Xmx3072m'
-
-- stage: CodeAnalysisWithSonarQube 
-  dependsOn: Build
-  jobs:
-    - job: SonarAnalysis
-      steps:
-      - task: Maven@3
-        displayName: 'SonarQube Analysis'
-        inputs:
-          goals: 'sonar:sonar'
-          mavenOptions: '-Dsonar.host.url=http://18.208.148.153:9000 -Dsonar.login=admin -Dsonar.password=Default@123456 -Dsonar.java.binaries=target/test-classes/com/talentx/account/controllerTest/'
