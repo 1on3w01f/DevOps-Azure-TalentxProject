@@ -26,14 +26,25 @@ stages:
                 path: helm
                 displayName: Checkout
               - task: Bash@3
-                displayName: Helm dependency update
+                displayName: 'Helm dependency update'
                 inputs:
                   targetType: 'inline'
                   script: |
                     ls
                     helm dependency list talentxchart
                     helm dependency list talentxchart
-
+              - task: HelmDeploy@0
+                displayName: 'Login'
+                inputs:
+                  connectionType: 'Kubernetes Service Connection'
+                  kubernetesServiceConnection: 'kubeTalentxConnect'
+                  command: 'login'
+              - task: Bash@3
+                displayName: 'Helm Uppgrade'
+                inputs:
+                  targetType: 'inline'
+                  script: |
+                    helm upgrade --install --force talentxstack $(Agent.BuildDirectory)/helm/talentxcharts
 
 
 
