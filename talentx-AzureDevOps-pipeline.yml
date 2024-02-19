@@ -64,7 +64,7 @@ stages:
         displayName: 'SonarQube Analysis'
         inputs:
           goals: 'clean install sonar:sonar'
-          mavenOptions: '-Dsonar.host.url=http://52.207.219.135:9000 -Dsonar.login=admin -Dsonar.password=Default@123456 -Dsonar.java.binaries=target/test-classes/com/talentx/account/controllerTest/'
+          mavenOptions: '-Dsonar.host.url=http://52.207.219.135:9000 -Dsonar.login=squ_b5e85e25fd0d68843b66ce218d1eb008cc2ed5de -Dsonar.java.binaries=target/test-classes/com/talentx/account/controllerTest/'
 
 - stage: BuildTalentxAppImage
   variables:
@@ -83,6 +83,9 @@ stages:
         tags: '$(tag)'
 
 - stage: Prod
+  variables:
+    repository: 'securewolf/talentx_app'
+    tags: '1atest'
   jobs:
     - deployment: Helm_Deployment_Prod
       environment: prod
@@ -116,5 +119,5 @@ stages:
               inputs:
                 targetType: 'inline'
                 script: |
-                  helm upgrade --install --force talentxstack $(Agent.BuildDirectory)/helm/talentxcharts --set appimage=${registry}:V${BUILD_NUMBER}
+                  helm upgrade --install --force talentxstack1 $(Agent.BuildDirectory)/helm/talentxcharts --set appimage=$(repository):$(tag)
 
