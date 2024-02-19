@@ -67,7 +67,6 @@ stages:
 - stage: BuildTalentxAppImage
   variables:
     tag: '1atest'
-  dependsOn: Build
   jobs:
   - job: BuildImage
     steps:
