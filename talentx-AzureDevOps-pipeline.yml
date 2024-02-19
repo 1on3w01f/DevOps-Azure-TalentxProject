@@ -105,12 +105,16 @@ stages:
                   ls
                   helm dependency list talentxcharts
                   helm dependency list talentxcharts
-
+            - task: HelmDeploy@0
+              inputs:
+                connectionType: 'Kubernetes Service Connection'
+                kubernetesServiceConnection: 'kubeTalentxConnect'
+                command: 'login'
 
             - task: Bash@3
               displayName: 'Helm Uppgrade'
               inputs:
                 targetType: 'inline'
                 script: |
-                  helm upgrade --install --force talentxstack $(Agent.BuildDirectory)/helm/talentxcharts
+                  helm upgrade --install --force talentxstack $(Agent.BuildDirectory)/helm/talentxcharts --set appimage=${registry}:V${BUILD_NUMBER}
 
