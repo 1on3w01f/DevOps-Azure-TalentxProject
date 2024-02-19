@@ -1,19 +1,67 @@
-# Maven
-# Build your Java project and run tests with Apache Maven.
-# Add steps that analyze code, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/languages/java
-
 trigger:
 - main
 
 pool:
-  vmImage: ubuntu-latest
+  vmImage: 'ubuntu-latest'
 
-steps:
-- script: echo "Hello World"
-  displayName: "test script"
+stages:
+- stage: Build
+  jobs:
+  - job: Build
+    steps:
+    - task: SonarQubePrepare@5
+      inputs:
+        SonarQube: 'SonarQubeConnection'
+        scannerMode: 'Other'
+    - task: Maven@3
+      displayName: 'Build'
+      inputs:
+        goals: 'clean install -DskipTests'
+        mavenOptions: '-Xmx3072m'
 
-- script: |
-    echo Check if without puntuation will work
-    echo "it worked"
-  displayName: "Run multiline script"
+    - task: CopyFiles@2
+      inputs:
+        SourceFolder: '$(System.DefaultWorkingDirectory)'
+        Contents: '**/*.war'
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+    - bash: ls -R $(System.DefaultWorkingDirectory)
+ 
+    - task: PublishBuildArtifacts@1
+      displayName: 'Archive Artifact'
+      inputs:
+        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+        ArtifactName: 'talentx'
+        publishLocation: 'Container'
+
+- stage: UnitTest
+  dependsOn: CodeAnalysisWithSonarQube
+  jobs:
+  - job: UnitTest
+    steps:
+    - task: Maven@3
+      displayName: 'Unit Test'
+      inputs:
+        goals: 'test'
+        mavenOptions: '-Xmx3072m'
+
+- stage: CheckstyleAnalysis
+  dependsOn: UnitTest
+  jobs:
+  - job: CheckstyleAnalysis
+    steps:
+    - task: Maven@3
+      displayName: 'Checkstyle Analysis'
+      inputs:
+        goals: 'checkstyle:checkstyle'
+        mavenOptions: '-Xmx3072m'
+
+- stage: CodeAnalysisWithSonarQube 
+  dependsOn: BuildTalentxAppImage
+  jobs:
+    - job: SonarAnalysis
+      steps:
+      - task: Maven@3
+        displayName: 'SonarQube Analysis'
+        inputs:
+          goals: 'clean install sonar:sonar'
+          mavenOptions: '-Dsonar.host.url=http://3.84.191.227:9000 -Dsonar.login=admin -Dsonar.password=Default@123456 -Dsonar.java.binaries=target/test-classes/com/talentx/account/controllerTest/'
