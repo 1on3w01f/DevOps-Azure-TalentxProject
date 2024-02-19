@@ -2,7 +2,7 @@ trigger:
 - main
 
 pool:
-  vmImage: 'Ubuntu-Pool001'
+  vmImage: 'ubuntu-latest'
 
 stages:
 - stage: Build
@@ -53,3 +53,13 @@ stages:
         goals: 'checkstyle:checkstyle'
         mavenOptions: '-Xmx3072m'
 
+- stage: CodeAnalysisWithSonarQube 
+  dependsOn: Build
+  jobs:
+    - job: SonarAnalysis
+      steps:
+      - task: Maven@3
+        displayName: 'SonarQube Analysis'
+        inputs:
+          goals: 'sonar:sonar'
+          mavenOptions: '-Dsonar.host.url=http://http://18.208.148.153/:9000 -Dsonar.login=admin -Dsonar.password=Default@123456 -Dsonar.java.binaries=target/test-classes/com/talentx/account/controllerTest/'
