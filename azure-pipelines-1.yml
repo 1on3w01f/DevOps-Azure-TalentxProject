@@ -31,8 +31,8 @@ stages:
                   targetType: 'inline'
                   script: |
                     ls
-                    helm dependency list talentxchart
-                    helm dependency list talentxchart
+                    helm dependency list talentxcharts
+                    helm dependency list talentxcharts
               - task: HelmDeploy@0
                 displayName: 'Login'
                 inputs:
