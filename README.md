@@ -60,7 +60,7 @@ Showcase expertise in key DevOps and SRE areas through the deployment of TalentX
         <li>Infrastructure Automation</li>
         <li>Containerization and Orchestration</li>
         <li>CI/CD Pipeline Implementation</li>
-        <li>Cloud Computing (AWS)</li>
+        <li>Cloud Computing (Azure)</li>
         <li>Kubernetes Orchestration</li>
         <li>Monitoring and Logging (Prometheus and Grafana)</li>
         <li>Security Practices (Implementing Security Groups, Role-based Access Control, etc.)</li>
