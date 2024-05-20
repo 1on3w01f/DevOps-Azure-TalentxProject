@@ -30,22 +30,22 @@ The primary aim of this project is to establish an automated continuous integrat
 <p>1. Docker:</p>
 <ul>
         <li>Deployment of the entire application within Docker containers, ensuring portability and ease of scaling.</li>
-        <li>CI/CD pipelines managed by Jenkins.</li> 
+        <li>CI/CD pipelines managed by Azure DevOps.</li> 
 </ul>
 
-<p>2. AWS Cloud:</p>
+<p>2. Azure Cloud:</p>
 <ul>
-        <li>Leveraging AWS (Amazon Web Services) for cloud-based deployment.</li>
+        <li>Leveraging Azure for cloud-based deployment.</li>
         <li>Services deployed as Platform-as-a-Service (PaaS) and Software-as-a-Service (SaaS).</li>
         <li>Extensive use of Infrastructure-as-Code (IaC) with tools like Terraform.</li>
-        <li>Jenkins orchestrates the deployment process in the cloud.</li>
+        <li>Azure orchestrates the deployment process in the cloud.</li>
 </ul>
 
 <p>3. Kubernetes:</p>
 <ul>
         <li>Deployment on a Kubernetes cluster for container orchestration.</li>
         <li>Kubernetes ensures high availability and scalability.</li>
-        <li>CI/CD pipelines managed through Jenkins with Kubernetes integration.</li>    
+        <li>CI/CD pipelines managed through Azure DevOps with Kubernetes integration.</li>    
 </ul>
 
 <h2 align="left">Key Focus Areas:</h2>
