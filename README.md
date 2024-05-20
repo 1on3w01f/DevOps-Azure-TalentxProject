@@ -1,8 +1,8 @@
 
-<h1 align="center">PROJECT - Showcasing DevOps and Site Reliability Engineering (SRE)</h1>
+<h1 align="center">PROJECT - CICD of Docker Containers on Azure Kubernetes Service (AKS) using Azure DevOps</h1>
 
 <h2 align="left">PROJECT GOAL</h2>
-Showcase expertise in key DevOps and SRE areas through the deployment of TalentX, a business networking web application.
+The primary aim of this project is to establish an automated continuous integration and delivery pipeline for the TalentX application's Docker containers. The primary focus is on continuously building Docker images and deploying them onto a Kubernetes cluster.
 
 <h2 align="left">BACKGROUND</h2>
 <p>TalentX is a robust business networking web application developed in Java, aimed at connecting employers with top talents in the DevOps and Cybersecurity domains worldwide. The project involves deploying TalentX, which comprises multiple services, onto different platforms to demonstrate proficiency in DevOps and SRE practices.</p>
@@ -27,20 +27,13 @@ Showcase expertise in key DevOps and SRE areas through the deployment of TalentX
 
 <h2 align="left">DEPLOYMENT PLATFORMS:</h2>
       
-<p>1. Local setup:</p>
-<ul>
-        <li>Vagrant: Utilized to create virtual machines (VMs) on a local machine.</li>
-        <li>Automation: Deployment of services on VMs automated with tools like Ansible.</li>
-        <li>Jenkins: Integration for continuous integration and continuous deployment (CI/CD) pipelines.</li>    
-</ul>
-
-<p>2. Docker:</p>
+<p>1. Docker:</p>
 <ul>
         <li>Deployment of the entire application within Docker containers, ensuring portability and ease of scaling.</li>
         <li>CI/CD pipelines managed by Jenkins.</li> 
 </ul>
 
-<p>3. AWS Cloud:</p>
+<p>2. AWS Cloud:</p>
 <ul>
         <li>Leveraging AWS (Amazon Web Services) for cloud-based deployment.</li>
         <li>Services deployed as Platform-as-a-Service (PaaS) and Software-as-a-Service (SaaS).</li>
@@ -48,7 +41,7 @@ Showcase expertise in key DevOps and SRE areas through the deployment of TalentX
         <li>Jenkins orchestrates the deployment process in the cloud.</li>
 </ul>
 
-<p>4. Kubernetes:</p>
+<p>3. Kubernetes:</p>
 <ul>
         <li>Deployment on a Kubernetes cluster for container orchestration.</li>
         <li>Kubernetes ensures high availability and scalability.</li>
@@ -69,5 +62,3 @@ Showcase expertise in key DevOps and SRE areas through the deployment of TalentX
         <li>Scalability (Docker and Kubernetes)</li>
 </ul>
 
-
-<p>This project aims to demonstrate proficiency in the aforementioned DevOps and SRE areas by successfully deploying TalentX on diverse platforms, emphasizing automation, scalability, and robustness in each environment. Jenkins and Ansible play pivotal roles in ensuring smooth deployment and continuous improvement.</p>
